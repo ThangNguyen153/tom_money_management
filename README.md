@@ -1,11 +1,63 @@
-https://kipalog.com/posts/Cai-dat-moi-truong-Docker-cho-Laravel-2019
+#Source: [Tutorial topic](https://kipalog.com/posts/Cai-dat-moi-truong-Docker-cho-Laravel-2019)
+##Edited by: [Tom Nguyen](https://www.linkedin.com/in/thang-n-b978ba170/)
 
-docker build -t localcomposer -f ./composer/composer.dockerfile ./composer
+### A. This step is used to build project from zero, if you clone my git repository, so skip this and move to Section B "Run project after cloning git repository":
 
-docker run -it -v $(pwd):/var/www/html localcomposer:latest /root/.composer/vendor/bin/laravel new app
+1. #### Build image for composer:
+    `docker build -t tmm_composer -f ./docker/composer/composer.dockerfile ./docker/composer`
 
-docker run -v $(pwd)/app:/var/www/html localcomposer:latest composer install
+2. #### Run composer image to create Source Code folder ( remove container after creating successfully ):
+    `docker run --rm -it -v $(pwd)/web:/srv/app/web/ tmm_composer:latest /root/.composer/vendor/bin/laravel new app`
 
-change variable in .env file in app folder
+3. #### Change owner for APP folder in your local folder (change 'thang' user to your own user ):
+    `sudo chown -R thang:thang web/`
 
-docker-compose up -d
+4. #### Change information in .env file:
+    *Change variable in .env file in app folder*
+
+5. #### Run composer image to install vendor ( remove container after creating successfully ):
+    `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer install`
+
+6. #### Change owner for storage and bootstrap/cache/ folder in your local folder:
+    `sudo chown www-data:www-data -R web/app/storage/`<br/>
+    `sudo chown www-data:www-data -R web/app/bootstrap/cache/`
+
+7. #### Run project:
+    `docker-compose up -d`
+
+#### URL:
+    homepage: https://localhost:8443/
+
+### B. Run project after cloning git repository:
+
+1. #### Build image for composer:
+   `docker build -t tmm_composer -f ./docker/composer/composer.dockerfile ./docker/composer`
+
+2. #### Change owner for APP folder in your local folder (change 'thang' user to your own user ):
+   `sudo chown -R thang:thang web/`
+
+3. #### Change information in .env file:
+   *Change variable in .env file in app folder*
+
+4. #### Run composer image to update vendor ( remove container after creating successfully ):
+   `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer update`
+
+5. #### Change owner for storage and bootstrap/cache/ folder in your local folder:
+   `sudo chown www-data:www-data -R web/app/storage/`<br/>
+   `sudo chown www-data:www-data -R web/app/bootstrap/cache/`
+
+6. #### Run project:
+   `docker-compose up -d`
+
+#### URL:
+    homepage: https://localhost:8443/
+
+#### Notice:
+1. Update composer: 
+    * Remove current composer image
+    * Edit docker/composer.dockerfile
+    * Build new composer image:<br/>
+      `docker build -t tmm_composer -f ./docker/composer/composer.dockerfile ./docker/composer`
+    * Update vendor:<br/>
+      `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer update`
+#### Change logs:
