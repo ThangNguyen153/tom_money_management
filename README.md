@@ -26,8 +26,8 @@
     `docker-compose up -d`
 
 #### URL:
-    homepage: https://localhost:8443/
-
+    homepage: https://localhost:8443
+    phpmyadmin: https://localhost:8081
 ### B. Run project after cloning git repository:
 
 1. #### Build image for composer:
@@ -50,7 +50,14 @@
    `docker-compose up -d`
 
 #### URL:
-    homepage: https://localhost:8443/
+    homepage: https://localhost:8443
+    phpmyadmin: http://localhost:8444
+
+#### APP:
+   * create user:<br/>
+      * `php artisan tinker`<br/>
+      * `DB::table('users')->insert(['username'=>'admin','firstname'=>'thang','lastname'=>'nguyen','fullname'=>'thangnguyen','email'=>'xxx@gmail.com','password'=>Hash::make('123456'),'email_verified_at'=>20210412])`<br/>
+   * create client: `php artisan passport:install`
 
 #### Notice:
 1. Update composer: 
@@ -60,4 +67,7 @@
       `docker build -t tmm_composer -f ./docker/composer/composer.dockerfile ./docker/composer`
     * Update vendor:<br/>
       `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer update`
+2. Install new package from composer (Please make sure that you add package config into app.php file manually):<br/>
+   `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer require <your package name>`
+
 #### Change logs:
