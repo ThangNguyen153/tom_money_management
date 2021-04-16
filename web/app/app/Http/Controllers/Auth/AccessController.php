@@ -4,11 +4,17 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\TMM_User;
+use App\Notifications\UserChangePassword;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\PasswordReset;
+use \Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Notification;
 
 class AccessController extends Controller
 {
@@ -34,7 +40,6 @@ class AccessController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'email_verified_at' => 20210412
         );
         $firstname ='';
         $lastname ='';
@@ -50,6 +55,7 @@ class AccessController extends Controller
         $user = new TMM_User($user_info);
         if($user) {
             $user->save();
+            event(new Registered($user));
             return response()->json([
                 'message' => 'Successfully created user!'
             ], 201);
@@ -111,37 +117,36 @@ class AccessController extends Controller
     }
 
     /**
-     * Get the authenticated User
-     *
-     * @return [json] user object
-     */
-    public function getMyProfile(Request $request)
-    {
-        return response()->json($request->user());
-    }
-
-    /**
-     * Get the authenticated User
-     * @param  [string] email
+     * Change user password
+     * @param  [string] current_password
+     * @param  [string] password
+     * @param  [string] password_confirmation
      * @return [string] message
      */
-    public function deleteUser(Request $request)
+    public function changePassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|string|email'
+            'current_password' => 'required|string',
+            'password' => 'required|string|confirmed',
         ]);
-        $email =$request->input('email');
-        $user = TMM_User::where('email',$email)->first();
-        if($user){
-            $user->delete();
+        $user = $request->user();
+        if(Hash::check($request->current_password, $user->password))
+        {
+            $user->forceFill([
+                'password' => Hash::make($request->password)
+            ])->setRememberToken(Str::random(60));
+            $user->save();
+            $user->notify(new UserChangePassword());
+
             return response()->json([
-                'message' => 'Successfully deleted out'
+                'message' => 'Your password is changed successfully!'
             ]);
-        }else{
+        }
+        else
+        {
             return response()->json([
-                'message' => 'User not found'
-            ],404);
+                'message' => 'Please enter correct current password'
+            ],400);
         }
     }
-
 }

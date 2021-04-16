@@ -12,8 +12,8 @@
 3. #### Change owner for APP folder in your local folder (change 'thang' user to your own user ):
     `sudo chown -R thang:thang web/`
 
-4. #### Change information in .env file:
-    *Change variable in .env file in app folder*
+4. #### Change information in .env and app.php file:
+    *Change variable in .env and app.php file in app folder*
 
 5. #### Run composer image to install vendor ( remove container after creating successfully ):
     `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer install`
@@ -36,8 +36,9 @@
 2. #### Change owner for APP folder in your local folder (change 'thang' user to your own user ):
    `sudo chown -R thang:thang web/`
 
-3. #### Change information in .env file:
-   *Change variable in .env file in app folder*
+3. #### Create .env file:
+   * Moving into App folder, run this command below to create .env from .env.example file *<br/>
+      `cp -r .env.example .env`
 
 4. #### Run composer image to update vendor ( remove container after creating successfully ):
    `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer update`

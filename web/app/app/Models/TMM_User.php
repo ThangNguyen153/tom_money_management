@@ -3,11 +3,12 @@
 
 namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class TMM_User extends Authenticatable implements MustVerifyEmail
+class TMM_User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 {
     use Notifiable, HasApiTokens;
     protected $table = 'users';
