@@ -55,6 +55,7 @@ class AccessController extends Controller
         $user = new TMM_User($user_info);
         if($user) {
             $user->save();
+            $user->assignRole('user');
             event(new Registered($user));
             return response()->json([
                 'message' => 'Successfully created user!'

@@ -7,11 +7,13 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class TMM_User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 {
-    use Notifiable, HasApiTokens;
+    use Notifiable, HasApiTokens, HasRoles;
     protected $table = 'users';
+    protected $guard_name = 'api';
     /**
      * The attributes that are mass assignable.
      *

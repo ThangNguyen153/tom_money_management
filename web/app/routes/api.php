@@ -68,6 +68,7 @@ Route::group([
 
 Route::group([
     'prefix' => 'manage',
+    'middleware' => ['role:super-administrator|administrator']
     ], function(){
         Route::group([
             'middleware' => ['cors', 'json.response', 'auth:api']
@@ -83,6 +84,7 @@ Route::group([
 
 Route::group([
     'prefix' => 'user',
+    'middleware' => ['role:user']
 ], function(){
     Route::group([
         'middleware' => ['cors', 'json.response', 'auth:api']

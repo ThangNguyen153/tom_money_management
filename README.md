@@ -57,7 +57,7 @@
 #### APP:
    * create user:<br/>
       * `php artisan tinker`<br/>
-      * `DB::table('users')->insert(['username'=>'admin','firstname'=>'thang','lastname'=>'nguyen','fullname'=>'thangnguyen','email'=>'xxx@gmail.com','password'=>Hash::make('123456'),'email_verified_at'=>20210412])`<br/>
+      * `DB::table('users')->insert(['username'=>'admin','firstname'=>'thang','lastname'=>'nguyen','fullname'=>'thangnguyen','email'=>'xxx@gmail.com','password'=>Hash::make('123456'))`<br/>
    * create client: `php artisan passport:install`
 
 #### Notice:

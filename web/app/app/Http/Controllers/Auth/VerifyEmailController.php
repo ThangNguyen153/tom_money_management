@@ -14,26 +14,26 @@ use Illuminate\Support\Str;
 
 class VerifyEmailController extends Controller
 {
-    public function __invoke(Request $request): RedirectResponse
+    public function __invoke(Request $request)
     {
         $user = TMM_User::find($request->route('id'));
 
         if ($user->hasVerifiedEmail()) {
-            return redirect('/');
+            return response()->json(["message" => "Your email is verified successfully"]);
         }
 
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }
-        return redirect('/');
+        return response()->json(["message" => "Your email is verified successfully"]);
     }
 
     public function resendVerificationEmail(Request $request) {
         if ($request->user()->hasVerifiedEmail()) {
-            return response()->json(["msg" => "Email already verified."], 400);
+            return response()->json(["message" => "Email already verified."], 400);
         }
         $request->user()->sendEmailVerificationNotification();
-        return response()->json(["msg" => "Verification link is sent to your email"]);
+        return response()->json(["message" => "Verification link is sent to your email"]);
     }
 
     /**
