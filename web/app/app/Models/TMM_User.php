@@ -26,7 +26,9 @@ class TMM_User extends Authenticatable implements MustVerifyEmail, CanResetPassw
         'fullname',
         'email',
         'password',
-        'email_verified_at'
+        'email_verified_at',
+        'wallet',
+        'bank',
     ];
 
     /**
