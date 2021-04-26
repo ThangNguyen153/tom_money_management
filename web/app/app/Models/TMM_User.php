@@ -51,4 +51,8 @@ class TMM_User extends Authenticatable implements MustVerifyEmail, CanResetPassw
     public function payment_methods(){
         return $this->belongsToMany(PaymentMethod::class,'user_paymentmethod','user_id','paymentmethod_id');
     }
+
+    public function daily_usages(){
+        return $this->hasMany(DailyUsage::class,'user_id','id');
+    }
 }

@@ -32,4 +32,8 @@ class PaymentMethod extends Model
     public function users(){
         return $this->belongsToMany(TMM_User::class,'user_paymentmethod','user_id','paymentmethod_id');
     }
+
+    public function daily_usages(){
+        return $this->hasMany(DailyUsage::class,'paymentmethods_id','id');
+    }
 }

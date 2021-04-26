@@ -3,12 +3,13 @@ namespace App\Http\Controllers\User\API;
 
 use App\Models\PaymentMethod;
 use App\Models\TMM_User;
+use App\Models\UsageType;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-
+use DateTime;
 class UserController extends Controller
 {
     /**
@@ -135,6 +136,47 @@ class UserController extends Controller
                 ['message' => 'Method not found',404]
             );
         }
+        return \response()->json($user->payment_methods()->get());
+    }
+
+    /**
+     * Create user's daily usage
+     * @param [string] payment_method
+     * @param [string] usage_type
+     * @param [double] paid
+     * @param [double] extra
+     * @param [string] description
+     * @param [datetime] date
+     * @return [double] updated_amount
+     */
+    public function addDailyUsage(Request $request)
+    {
+        $request->validate([
+            'payment_method' => 'required|string|min:3',
+            'usage_type' => 'required|string|min:3',
+            'paid' => 'required|regex:/^\d+(\.\d{1,3})?$/',
+            'extra' => 'required|regex:/^\d+(\.\d{1,3})?$/',
+            'description' => 'string|max:255',
+            'date' => 'date_format:Y-m-d H:i:s',
+        ]);
+        $user = $request->user();
+        $date = DateTime::createFromFormat('Y-m-d H:i:s', $request->date);
+
+        $payment_method = $request->payment_method;
+        $method = $user->payment_methods()->where('slug',$payment_method)->first();
+        if (!$method){
+            return \response()->json(
+                ['message' => 'Method not found',404]
+            );
+        }
+
+        $usage_type = UsageType::where('slug',$request->usage_type)->first();
+        if (!$usage_type){
+            return \response()->json(
+                ['message' => 'Usage type not found',404]
+            );
+        }
+
         return \response()->json($user->payment_methods()->get());
     }
 }
