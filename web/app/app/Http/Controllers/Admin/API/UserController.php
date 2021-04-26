@@ -23,7 +23,7 @@ class UserController extends Controller
 
     /**
      * Get the authenticated User
-     * @param  [string] email
+     * @param [string] email
      * @return [string] message
      */
     public function deleteUser(Request $request)

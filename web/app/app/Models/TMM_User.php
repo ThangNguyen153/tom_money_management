@@ -27,8 +27,6 @@ class TMM_User extends Authenticatable implements MustVerifyEmail, CanResetPassw
         'email',
         'password',
         'email_verified_at',
-        'wallet',
-        'bank',
     ];
 
     /**
@@ -49,4 +47,8 @@ class TMM_User extends Authenticatable implements MustVerifyEmail, CanResetPassw
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function payment_methods(){
+        return $this->belongsToMany(PaymentMethod::class,'user_paymentmethod','user_id','paymentmethod_id');
+    }
 }

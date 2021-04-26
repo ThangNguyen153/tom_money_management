@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\PaymentMethod;
 use App\Models\TMM_User;
 use App\Notifications\UserChangePassword;
 use http\Env\Response;
@@ -56,6 +57,8 @@ class AccessController extends Controller
         if($user) {
             $user->save();
             $user->assignRole('user');
+            $wallet_method = PaymentMethod::where('slug','wallet')->first();
+            $user->payment_methods()->attach($wallet_method);
             event(new Registered($user));
             return response()->json([
                 'message' => 'Successfully created user!'

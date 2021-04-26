@@ -90,6 +90,8 @@ Route::group([
         'middleware' => ['cors', 'json.response', 'auth:api']
     ], function() {
         Route::get('my-profile', 'App\Http\Controllers\User\API\UserController@getMyProfile')->name('get-user-profile');
+        Route::put('update-payment-methods','App\Http\Controllers\User\API\UserController@updateUserPaymentMethods')->name('update-user-payment-methods');
+        Route::put('update-balance','App\Http\Controllers\User\API\UserController@updateUserBalance')->name('update-user-balance');
     });
 });
 
