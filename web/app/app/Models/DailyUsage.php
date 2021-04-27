@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DailyUsage extends Model
 {
     use HasFactory;
-    protected $table = 'daily_usage';
+    protected $table = 'daily_usages';
     protected $guard_name = 'api';
 
     /**

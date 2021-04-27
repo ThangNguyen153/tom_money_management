@@ -23,6 +23,9 @@ class UserPermissionSeeder extends Seeder
         $roleSuperAdmin = Role::findOrCreate('super-administrator','api');
         $roleAdmin = Role::findOrCreate('administrator','api');
         $roleUser = Role::findOrCreate('user','api');
+        $user = TMM_User::find(1);
+        if($user)
+            $user->assignRole('super-administrator');
         //$permission = Permission::create(['name' => 'edit articles']);
     }
 }

@@ -49,16 +49,19 @@
 
 6. #### Run project:
    `docker-compose up -d`
-
+7. #### Migrate database:
+   `php artisan migrate`
 #### URL:
     homepage: https://localhost:8443
     phpmyadmin: http://localhost:8444
 
 #### APP:
+   * Access App container: `docker-compose exec app bash`
    * create user:<br/>
       * `php artisan tinker`<br/>
-      * `DB::table('users')->insert(['username'=>'admin','firstname'=>'thang','lastname'=>'nguyen','fullname'=>'thangnguyen','email'=>'xxx@gmail.com','password'=>Hash::make('123456'))`<br/>
+      * `DB::table('users')->insert(['username'=>'admin','firstname'=>'thang','lastname'=>'nguyen','fullname'=>'thangnguyen','email'=>'xxx@gmail.com','password'=>Hash::make('123456')])`<br/>
    * create client: `php artisan passport:install`
+   * Import some default info: `php artisan db:seed CLASS_NAME`
 
 #### Notice:
 1. Update composer: 

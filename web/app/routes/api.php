@@ -95,8 +95,8 @@ Route::group([
 
         /* daily usage */
         Route::post('add-daily-usage','App\Http\Controllers\User\API\UserController@addDailyUsage')->name('add-user-daily-usage');
-//        Route::put('update-daily-usage','App\Http\Controllers\User\API\UserController@updateDailyUsage')->name('update-user-daily-usage');
-//        Route::delete('remove-daily-usage','App\Http\Controllers\User\API\UserController@removeDailyUsage')->name('remove-user-daily-usage');
+        Route::put('update-daily-usage','App\Http\Controllers\User\API\UserController@updateDailyUsage')->name('update-user-daily-usage');
+        Route::delete('remove-daily-usage','App\Http\Controllers\User\API\UserController@removeDailyUsage')->name('remove-user-daily-usage');
     });
 });
 
