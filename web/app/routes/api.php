@@ -75,6 +75,7 @@ Route::group([
         ], function() {
             Route::delete('user', 'App\Http\Controllers\Admin\API\UserController@deleteUser')->name('delete-user');
             Route::get('my-profile', 'App\Http\Controllers\Admin\API\UserController@getMyProfile')->name('get-admin-profile');
+            Route::get('usage-types', 'App\Http\Controllers\Admin\API\UsageTypeController@getUsageTypes')->name('get-usage-types');
         });
 });
 
@@ -90,13 +91,15 @@ Route::group([
         'middleware' => ['cors', 'json.response', 'auth:api']
     ], function() {
         Route::get('my-profile', 'App\Http\Controllers\User\API\UserController@getMyProfile')->name('get-user-profile');
-        Route::put('update-payment-methods','App\Http\Controllers\User\API\UserController@updateUserPaymentMethods')->name('update-user-payment-methods');
-        Route::put('update-balance','App\Http\Controllers\User\API\UserController@updateUserBalance')->name('update-user-balance');
 
-        /* daily usage */
-        Route::post('add-daily-usage','App\Http\Controllers\User\API\UserController@addDailyUsage')->name('add-user-daily-usage');
-        Route::put('update-daily-usage','App\Http\Controllers\User\API\UserController@updateDailyUsage')->name('update-user-daily-usage');
-        Route::delete('remove-daily-usage','App\Http\Controllers\User\API\UserController@removeDailyUsage')->name('remove-user-daily-usage');
+        /* Payment method */
+        Route::put('update-payment-methods','App\Http\Controllers\User\API\PaymentmethodController@updateUserPaymentMethods')->name('update-user-payment-methods');
+        Route::put('update-balance','App\Http\Controllers\User\API\PaymentmethodController@updateUserBalance')->name('update-user-balance');
+
+        /* Daily usage */
+        Route::post('add-daily-usage','App\Http\Controllers\User\API\DailyUsageController@addDailyUsage')->name('add-user-daily-usage');
+        Route::put('update-daily-usage','App\Http\Controllers\User\API\DailyUsageController@updateDailyUsage')->name('update-user-daily-usage');
+        Route::delete('remove-daily-usage','App\Http\Controllers\User\API\DailyUsageController@removeDailyUsage')->name('remove-user-daily-usage');
     });
 });
 
