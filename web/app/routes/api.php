@@ -13,10 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
-
 /* GENERAL ROUTES */
 
 Route::group([
@@ -27,7 +23,7 @@ Route::group([
 
     // Verify email
     Route::get('/email/verify/{id}/{hash}', 'App\Http\Controllers\Auth\VerifyEmailController@__invoke')
-        ->middleware(['cors', 'json.response', 'signed', 'throttle:6,1'])
+        ->middleware(['cors', 'json.response', 'throttle:6,1'])
         ->name('verification.verify')
     ;
 
@@ -88,7 +84,7 @@ Route::group([
     'middleware' => ['role:user']
 ], function(){
     Route::group([
-        'middleware' => ['cors', 'json.response', 'auth:api']
+        'middleware' => ['cors', 'json.response', 'auth:api' , 'verified']
     ], function() {
         Route::get('my-profile', 'App\Http\Controllers\User\API\UserController@getMyProfile')->name('get-user-profile');
 

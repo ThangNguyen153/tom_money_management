@@ -16,10 +16,14 @@ class VerifyEmailController extends Controller
 {
     public function __invoke(Request $request)
     {
+        if (!$request->hasValidSignature()) {
+            return response()->json(["message" => "Invalid or Expired Verification Link."],403);
+        }
+
         $user = TMM_User::find($request->route('id'));
 
         if ($user->hasVerifiedEmail()) {
-            return response()->json(["message" => "Your email is verified successfully"]);
+            return response()->json(["message" => "Email already verified."]);
         }
 
         if ($user->markEmailAsVerified()) {
