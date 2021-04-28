@@ -31,6 +31,8 @@ class UserController extends Controller
         $email =$request->input('email');
         $user = TMM_User::where('email',$email)->first();
         if($user){
+            // delete all user's payment methods
+            $user->payment_methods()->detach();
             $user->delete();
             return response()->json([
                 'message' => 'Successfully deleted user'
