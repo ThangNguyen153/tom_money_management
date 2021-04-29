@@ -18,17 +18,17 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix' => 'access'
 ], function () {
-    Route::post('login', 'App\Http\Controllers\Auth\AccessController@login')->name('login');
-    Route::post('register', 'App\Http\Controllers\Auth\AccessController@register')->name('register');
+    Route::post('login', 'App\Http\Controllers\Auth\API\AccessController@login')->name('login');
+    Route::post('register', 'App\Http\Controllers\Auth\API\AccessController@register')->name('register');
 
     // Verify email
-    Route::get('/email/verify/{id}/{hash}', 'App\Http\Controllers\Auth\VerifyEmailController@__invoke')
+    Route::get('/email/verify/{id}/{hash}', 'App\Http\Controllers\Auth\API\VerifyEmailController@__invoke')
         ->middleware(['cors', 'json.response', 'throttle:6,1'])
         ->name('verification.verify')
     ;
 
     // Send reset-password link to given email
-    Route::post('forgot-password', 'App\Http\Controllers\Auth\VerifyEmailController@resendResetPasswordEmail')
+    Route::post('forgot-password', 'App\Http\Controllers\Auth\API\VerifyEmailController@resendResetPasswordEmail')
         ->middleware(['cors', 'json.response', 'guest', 'throttle:6,1'])
         ->name('password.email')
     ;
@@ -38,7 +38,7 @@ Route::group([
     })->middleware('guest')->name('password.reset');
 
     // Reset password
-    Route::post('/reset-password', 'App\Http\Controllers\Auth\VerifyEmailController@resetPassword')
+    Route::post('/reset-password', 'App\Http\Controllers\Auth\API\VerifyEmailController@resetPassword')
         ->middleware('guest')
         ->name('password.update');
 
@@ -47,13 +47,13 @@ Route::group([
     Route::group([
         'middleware' => ['cors', 'json.response', 'auth:api']
     ], function() {
-        Route::get('logout', 'App\Http\Controllers\Auth\AccessController@logout')->name('logout');
+        Route::get('logout', 'App\Http\Controllers\Auth\API\AccessController@logout')->name('logout');
 
         // Resend link to verify email
-        Route::post('/email/verify/resend', 'App\Http\Controllers\Auth\VerifyEmailController@resendVerificationEmail')
+        Route::post('/email/verify/resend', 'App\Http\Controllers\Auth\API\VerifyEmailController@resendVerificationEmail')
             ->middleware(['throttle:6,1'])->name('verification.send');
 
-        Route::post('change-password', 'App\Http\Controllers\Auth\AccessController@changePassword')->name('change-password');
+        Route::post('change-password', 'App\Http\Controllers\Auth\API\AccessController@changePassword')->name('change-password');
     });
 
 });

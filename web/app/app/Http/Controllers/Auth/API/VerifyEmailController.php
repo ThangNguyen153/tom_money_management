@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth\API;
 
 use http\Env\Response;
 use Illuminate\Auth\Events\Verified;

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth\API;
 
 use App\Models\PaymentMethod;
 use App\Models\TMM_User;

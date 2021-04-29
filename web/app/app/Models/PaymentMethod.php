@@ -34,6 +34,6 @@ class PaymentMethod extends Model
     }
 
     public function daily_usages(){
-        return $this->hasMany(DailyUsage::class,'paymentmethods_id','id');
+        return $this->hasMany(DailyUsage::class,'paymentmethod_id','id');
     }
 }

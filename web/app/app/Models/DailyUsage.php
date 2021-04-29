@@ -51,6 +51,6 @@ class DailyUsage extends Model
         return $this->belongsTo(PaymentMethod::class,'paymentmethod_id','id');
     }
     public function usage_type(){
-        return $this->belongsTo(TMM_User::class,'usagetype_id','id');
+        return $this->belongsTo(UsageType::class,'usagetype_id','id');
     }
 }

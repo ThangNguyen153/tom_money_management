@@ -16,3 +16,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::match(['get','post'],'/login', 'App\Http\Controllers\Auth\Web\AccessController@login')->name('login');
+Route::get('/logout', 'App\Http\Controllers\Auth\Web\AccessController@logout')->name('logout');
+
+Route::group([
+        'prefix' => 'user',
+        'middleware' => ['web_check_login']
+    ], function(){
+        Route::get('/daily-usage', 'App\Http\Controllers\Auth\Web\AccessController@getDailyUsage')->name('user-daily-usage');
+        Route::get('/statistics', 'App\Http\Controllers\Auth\Web\AccessController@getUsageStatistics')->name('user-usage-statistics');
+});
