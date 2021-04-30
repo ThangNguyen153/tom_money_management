@@ -89,8 +89,8 @@ Route::group([
         Route::get('my-profile', 'App\Http\Controllers\User\API\UserController@getMyProfile')->name('get-user-profile');
 
         /* Payment method */
-        Route::put('update-payment-methods','App\Http\Controllers\User\API\PaymentmethodController@updateUserPaymentMethods')->name('update-user-payment-methods');
-        Route::put('update-balance','App\Http\Controllers\User\API\PaymentmethodController@updateUserBalance')->name('update-user-balance');
+        Route::put('update-payment-methods','App\Http\Controllers\User\API\PaymentMethodController@updateUserPaymentMethods')->name('update-user-payment-methods');
+        Route::put('update-balance','App\Http\Controllers\User\API\PaymentMethodController@updateUserBalance')->name('update-user-balance');
 
         /* Daily usage */
         Route::post('add-daily-usage','App\Http\Controllers\User\API\DailyUsageController@addDailyUsage')->name('add-user-daily-usage');

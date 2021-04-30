@@ -2,26 +2,22 @@
 namespace App\Http\Controllers\Auth\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\DailyUsage;
-use App\Models\TMM_User;
 use App\Models\UsageType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\Web\Requests\LoginRequest;
+
 class AccessController extends Controller
 {
-    /**
-     * @param LoginRequest $request
-     * @return RedirectResponse
-     */
-    public function login(Request $request){
-        if ($request->getMethod() == 'GET') {
-            if (Auth::check()) {
-                return redirect()->route('user-daily-usage');
-            } else {
-                return view('login');
-            }
+    public function showLoginForm(){
+        if (Auth::check()) {
+            return redirect()->route('user-daily-usage');
+        } else {
+            return view('login');
         }
+    }
+
+    public function login(LoginRequest $request){
         if (Auth::viaRemember()){
             return redirect()->route('user-daily-usage');
         }else{
@@ -32,12 +28,11 @@ class AccessController extends Controller
                 return redirect()->back()->withInput()->with('status', 'Email or Password is incorrect');
             }
         }
-
     }
 
     public function logout(Request $request){
         Auth::logout();
-        return redirect()->route('login');
+        return redirect()->route('login-form');
     }
 
     public function getDailyUsage(Request $request) {
@@ -59,7 +54,7 @@ class AccessController extends Controller
                 'usagetypes' => $usagetypes,
             ]);
         }else{
-            return redirect()->route('login');
+            return redirect()->route('login-form');
         }
 
     }
@@ -71,7 +66,7 @@ class AccessController extends Controller
             }
             return view('statistics');
         }else{
-            return redirect()->route('login');
+            return redirect()->route('login-form');
         }
     }
 }

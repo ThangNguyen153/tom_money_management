@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers\Auth\Web\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
 {
@@ -23,8 +25,8 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required',
-            'password' => 'required'
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:6'
         ];
     }
 
@@ -38,5 +40,14 @@ class LoginRequest extends FormRequest
             'email.required' => 'Email is required',
             'password.required' => 'Password is required'
         ];
+    }
+    public function failedValidation(Validator $validator)
+    {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->with([
+                'editModal' => 'editModal',
+                'msg'       => $this->input()
+            ]);
     }
 }

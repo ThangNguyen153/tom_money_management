@@ -17,7 +17,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::match(['get','post'],'/login', 'App\Http\Controllers\Auth\Web\AccessController@login')->name('login');
+Route::get('/login', 'App\Http\Controllers\Auth\Web\AccessController@showLoginForm')->name('login-form');
+Route::post('/login', 'App\Http\Controllers\Auth\Web\AccessController@login')->name('login');
 Route::get('/logout', 'App\Http\Controllers\Auth\Web\AccessController@logout')->name('logout');
 
 Route::group([

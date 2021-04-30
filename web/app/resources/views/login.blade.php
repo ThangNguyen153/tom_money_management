@@ -11,14 +11,18 @@
         <li class="text-danger"> {{ session('status') }}</li>
     </ul>
 @endif
-<form action="{{ route('login') }}" method="post">
+<form action="{{ route('login-form') }}" method="post">
     {{ csrf_field() }}
     <div class="form-group has-feedback">
-        <input type="email" class="form-control" name="email" placeholder="Email">
+        <label for="email">Email:
+            <input type="email" class="form-control" name="email" placeholder="Email">
+        </label>
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
     </div>
     <div class="form-group has-feedback">
-        <input type="password" class="form-control" placeholder="Password" name="password">
+        <label for="password">Password:
+            <input type="password" class="form-control" placeholder="Password" name="password">
+        </label>
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
     </div>
     <div class="row">

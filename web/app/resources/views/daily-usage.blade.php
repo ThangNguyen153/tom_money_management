@@ -1,3 +1,4 @@
+<button><a href="{{ route('logout') }}">Log out</a></button>
 <div class="row">
     <div style="display: flex;">
         <div style="float: left;width: 40%; padding: 10px; height: 300px">
@@ -15,8 +16,9 @@
                     </tr>
                 </thead>
                 <tbody>
+                <?php $totalOfMonth = 0; ?>
                 @if(isset($daily_usages) && !empty(array($daily_usages)))
-                    @foreach($daily_usages->all() as $daily_usage)
+                    @foreach($daily_usages as $daily_usage)
                         <tr>
                             <td>{{ $daily_usage->id }}</td>
                             <td>{{ $daily_usage->payment_method->name }}</td>
@@ -27,6 +29,7 @@
                             <td>{{ $daily_usage->created_at }}</td>
                             <td>{{ $daily_usage->updated_at }}</td>
                         </tr>
+                        <?php  $totalOfMonth += $daily_usage->paid; ?>
                     @endforeach
                 @endif
                 </tbody>
@@ -39,6 +42,7 @@
                     <p>{{ $userPaymentMethod->name }} : {{ $userPaymentMethod->amount }}</p>
                 @endforeach
             @endif
+            <h3>Total Usage Of Month: {{$totalOfMonth}}</h3>
         </div>
         <div style="float: left;width: 40%; padding: 10px; height: 300px; max-height: 300px;">
             <h3>Usage Type List</h3>
