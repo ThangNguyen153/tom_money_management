@@ -5,23 +5,23 @@
         @endforeach
     </ul>
 @endif
-
-@if (session('status'))
+@if(session('status'))
     <ul>
         <li class="text-danger"> {{ session('status') }}</li>
     </ul>
 @endif
+
 <form action="{{ route('login-form') }}" method="post">
     {{ csrf_field() }}
     <div class="form-group has-feedback">
         <label for="email">Email:
-            <input type="email" class="form-control" name="email" placeholder="Email">
+            <input type="email" class="form-control" name="email" placeholder="Email" required>
         </label>
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
     </div>
     <div class="form-group has-feedback">
         <label for="password">Password:
-            <input type="password" class="form-control" placeholder="Password" name="password">
+            <input type="password" class="form-control" placeholder="Password" name="password" required>
         </label>
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
     </div>

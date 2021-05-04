@@ -43,12 +43,12 @@ class AccessController extends Controller
                 return response()->json(['message' => 'You don\'t have permission. User Only'],403);
             }
             $userPaymentMethods = $user->payment_methods()->get();
-            $usagetypes = UsageType::get();
+            $usagetypes = UsageType::orderBy('name', 'ASC')->get();
             $daily_usages = $user->daily_usages()
                                 ->whereYear('created_at', '=', now()->year)
                                 ->whereMonth('created_at', '=', now()->month)
                                 ->orderBy('created_at', 'ASC')
-                                ->get();
+                ->paginate(1)->withPath('/user/daily-usage');
             return view('daily-usage', ['daily_usages' => $daily_usages,
                 'userPaymentMethods' => $userPaymentMethods,
                 'usagetypes' => $usagetypes,

@@ -23,8 +23,8 @@
                             <td>{{ $daily_usage->id }}</td>
                             <td>{{ $daily_usage->payment_method->name }}</td>
                             <td>{{ $daily_usage->usage_type->name }}</td>
-                            <td>{{ $daily_usage->paid }}</td>
-                            <td>{{ $daily_usage->extra }}</td>
+                            <td>{{ number_format($daily_usage->paid,3) }}</td>
+                            <td>{{ number_format($daily_usage->extra,3) }}</td>
                             <td>{{ $daily_usage->description }}</td>
                             <td>{{ $daily_usage->created_at }}</td>
                             <td>{{ $daily_usage->updated_at }}</td>
@@ -34,15 +34,16 @@
                 @endif
                 </tbody>
             </table>
+            {{ $daily_usages->links('pagination::semantic-ui') }}
         </div>
         <div style="float: left;width: 10%; padding: 10px; height: 300px">
             <h3>User Balance</h3>
             @if(isset($userPaymentMethods) && !empty(array($userPaymentMethods)))
                 @foreach($userPaymentMethods->all() as $userPaymentMethod)
-                    <p>{{ $userPaymentMethod->name }} : {{ $userPaymentMethod->amount }}</p>
+                    <p>{{ $userPaymentMethod->name }} : {{ number_format($userPaymentMethod->amount,3) }}</p>
                 @endforeach
             @endif
-            <h3>Total Usage Of Month: {{$totalOfMonth}}</h3>
+            <h3>Total Usage Of Month: {{number_format($totalOfMonth,3)}}</h3>
         </div>
         <div style="float: left;width: 40%; padding: 10px; height: 300px; max-height: 300px;">
             <h3>Usage Type List</h3>
