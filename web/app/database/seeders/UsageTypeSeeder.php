@@ -69,7 +69,12 @@ class UsageTypeSeeder extends Seeder
 
         DB::table('usage_types')->insert([
             'name' => 'Hard salary',
-            'slug' => 'Soft salary',
+            'slug' => 'hard_salary',
+        ]);
+
+        DB::table('usage_types')->insert([
+            'name' => 'Soft salary',
+            'slug' => 'soft_salary',
         ]);
 
         DB::table('usage_types')->insert([
