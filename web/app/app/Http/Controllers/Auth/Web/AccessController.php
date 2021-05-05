@@ -48,7 +48,7 @@ class AccessController extends Controller
                                 ->whereYear('created_at', '=', now()->year)
                                 ->whereMonth('created_at', '=', now()->month)
                                 ->orderBy('created_at', 'ASC')
-                ->paginate(1)->withPath('/user/daily-usage');
+                ->paginate(30)->withPath('/user/daily-usage');
             return view('daily-usage', ['daily_usages' => $daily_usages,
                 'userPaymentMethods' => $userPaymentMethods,
                 'usagetypes' => $usagetypes,
