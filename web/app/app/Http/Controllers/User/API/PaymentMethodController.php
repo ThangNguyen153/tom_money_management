@@ -120,7 +120,7 @@ class PaymentMethodController extends Controller
             $description = $request->description;
         }
         if ($method) {
-            self::handleUpdateUserBalance($user,$method,$method->amount - $request->amount, $request->ip(),$description);
+            self::handleUpdateUserBalance($user,$method,$request->amount, $request->ip(),$description);
         }else{
             return \response()->json(
                 ['message' => 'Method not found'],404
