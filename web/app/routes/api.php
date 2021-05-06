@@ -91,6 +91,7 @@ Route::group([
         /* Payment method */
         Route::put('update-payment-methods','App\Http\Controllers\User\API\PaymentMethodController@updateUserPaymentMethods')->name('update-user-payment-methods');
         Route::put('update-balance','App\Http\Controllers\User\API\PaymentMethodController@updateUserBalance')->name('update-user-balance');
+        Route::put('transfer','App\Http\Controllers\User\API\PaymentMethodController@transferUserBalance')->name('transfer-user-balance');
 
         /* Daily usage */
         Route::post('add-daily-usage','App\Http\Controllers\User\API\DailyUsageController@addDailyUsage')->name('add-user-daily-usage');

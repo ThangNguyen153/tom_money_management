@@ -108,16 +108,6 @@ class UsageTypeSeeder extends Seeder
         ]);
 
         DB::table('usage_types')->insert([
-            'name' => 'Wallet to Bank',
-            'slug' => 'wallet_to_bank',
-        ]);
-
-        DB::table('usage_types')->insert([
-            'name' => 'Bank to Wallet',
-            'slug' => 'bank_to_wallet',
-        ]);
-
-        DB::table('usage_types')->insert([
             'name' => 'Others',
             'slug' => 'other',
         ]);

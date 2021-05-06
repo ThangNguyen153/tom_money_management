@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\PaymentMethod;
+use App\Models\TMM_User;
 use Illuminate\Http\Request;
 class PaymentMethodController extends Controller
 {
@@ -101,6 +102,7 @@ class PaymentMethodController extends Controller
      * Update user's balance
      * @param [string] payment_method
      * @param [double] amount
+     * @param [string] description
      * @return [double] updated_amount
      */
     public function updateUserBalance(Request $request)
@@ -108,18 +110,82 @@ class PaymentMethodController extends Controller
         $request->validate([
             'payment_method' => 'required|string|min:3',
             'amount' => 'required|regex:/^\d+(\.\d{1,3})?$/',
+            'description' => 'string|min:3|max:255'
         ]);
         $user = $request->user();
         $payment_method = $request->payment_method;
         $method = $user->payment_methods()->where('slug',$payment_method)->first();
-
+        $description = 'updated user balance';
+        if(isset($request->description)){
+            $description = $request->description;
+        }
         if ($method) {
-            $user->payment_methods()->wherePivot('paymentmethod_id', $method->id)->updateExistingPivot($method->id, ['amount' => $request->amount]);
+            self::handleUpdateUserBalance($user,$method,$method->amount - $request->amount, $request->ip(),$description);
         }else{
             return \response()->json(
                 ['message' => 'Method not found'],404
             );
         }
         return \response()->json($user->payment_methods()->get());
+    }
+
+    /**
+     * Transfer user's balance from current payment method to new payment method
+     * @param [string] current_payment_method
+     * @param [string] new_payment_method
+     * @param [double] amount
+     * @return [string] message
+     */
+    public function transferUserBalance(Request $request)
+    {
+        $request->validate([
+            'current_payment_method' => 'required|string|min:3',
+            'new_payment_method' => 'required|string|min:3|different:current_payment_method',
+            'amount' => 'required|regex:/^\d+(\.\d{1,3})?$/',
+        ]);
+        $user = $request->user();
+        $current_method = $user->payment_methods()->where('slug',$request->current_payment_method)->first();
+        $new_method = $user->payment_methods()->where('slug',$request->new_payment_method)->first();
+
+        if ($current_method && $new_method) {
+            // subtract current payment method balance
+            $reason = 'Transfered to ' . $new_method->name;
+            self::handleUpdateUserBalance($user,$current_method,$current_method->amount - $request->amount, $request->ip(),$reason);
+            // add new payment method balance
+            $reason = 'Transfered from ' . $current_method->name;
+            self::handleUpdateUserBalance($user,$new_method,$new_method->amount + $request->amount, $request->ip(),$reason);
+        }else{
+            return \response()->json(
+                ['message' => 'Method not found'],404
+            );
+        }
+        return \response()->json(['message'=>'Transfered successfully']);
+    }
+
+    /**
+     * Transfer user's balance from current payment method to new payment method
+     * @param [TMM_User] user
+     * @param [PaymentMethod] paymentMethod
+     * @param [double] amount
+     * @param [string] userIP
+     * @param [string] reason
+     * @return [boolean]
+     */
+    public function handleUpdateUserBalance(TMM_User $user, PaymentMethod $paymentMethod, float $amount, string $userIP ='', string $reason=''){
+        $old_amount = $paymentMethod->amount;
+        $description = $paymentMethod->name .' balance is changed from '. number_format($old_amount,3) .' to '. number_format($amount,3) . ' . Reason: ' . $reason;
+        $user->payment_methods()->wherePivot('paymentmethod_id', $paymentMethod->id)->updateExistingPivot($paymentMethod->id, ['amount' => $amount]);
+        // save log here
+        activity('User Balance')
+            ->performedOn($paymentMethod)
+            ->causedBy($user)
+            ->withProperties([
+                'action' => 'update',
+                'old_amount' => $old_amount,
+                'new_amount' => $amount,
+                'ip' => $userIP,
+            ])
+            ->log($description);
+        return true;
     }
 }

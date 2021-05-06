@@ -41,6 +41,7 @@ class UserChangePassword extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
+                    ->from('no-reply@gmail.com','no-reply')
                     ->subject('Password Changed')
                     ->greeting('Dear ' . env('APP_NAME') . ' user,')
                     ->line('You receive this email because your password was changed.')

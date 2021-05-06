@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\DailyUsage;
+use App\Models\PaymentMethod;
 use App\Models\UsageType;
 use Illuminate\Http\Request;
 use DateTime;
@@ -30,82 +31,27 @@ class DailyUsageController extends Controller
             'description' => 'string|min:3|max:255',
             'date' => 'date_format:Y-m-d H:i:s',
         ]);
+
         $user = $request->user();
+
         $payment_method = $request->payment_method;
-        $paid = $request->paid;
-        $extra = $request->extra;
-        $description = '';
+        $method = $user->payment_methods()->where('slug',$payment_method)->first();
+        if (!$method){
+            return \response()->json(
+                ['message' => 'Method not found'],404
+            );
+        }
 
         $usage_type = UsageType::where('slug',$request->usage_type)->first();
         if (!$usage_type){
             return \response()->json(
                 ['message' => 'Usage type not found'],404
             );
-        }else{
-            $method = $user->payment_methods()->where('slug',$payment_method)->first();
-            if (!$method){
-                return \response()->json(
-                    ['message' => 'Method not found'],404
-                );
-            }
-
-            if($usage_type->slug === 'bank_to_wallet' || $usage_type->slug === 'wallet_to_bank'){
-
-                $extra = 0.0; // save the transfered amount to paid column instead of extra
-
-                if($usage_type->slug === 'bank_to_wallet'){
-                    if($method->slug !== 'bank'){
-                        return \response()->json(
-                            [
-                                'message' => 'Payment method does not match with usage type. Choose Bank instead'
-                            ],401
-                        );
-                    }
-                    $toMethod = $user->payment_methods()->where('slug','wallet')->first();
-                    if (!$toMethod){
-                        return \response()->json(
-                            ['message' => 'User does not use Wallet'],401
-                        );
-                    }
-                    // subtract bank amount
-                    $user->payment_methods()
-                        ->wherePivot('paymentmethod_id', $method->id)
-                        ->updateExistingPivot($method->id, ['amount' => $method->amount - $paid]);
-
-                    // add wallet amount
-                    $user->payment_methods()
-                        ->wherePivot('paymentmethod_id', $toMethod->id)
-                        ->updateExistingPivot($toMethod->id, ['amount' => $toMethod->amount + $paid]);
-                }
-                if($usage_type->slug === 'wallet_to_bank'){
-                    if($method->slug !== 'wallet'){
-                        return \response()->json(
-                            [
-                                'message' => 'Payment method does not match with usage type. Choose Wallet instead'
-                            ],401
-                        );
-                    }
-                    $toMethod = $user->payment_methods()->where('slug','bank')->first();
-                    if (!$toMethod){
-                        return \response()->json(
-                            ['message' => 'User does not use Bank'],401
-                        );
-                    }
-                    // subtract wallet amount
-                    $user->payment_methods()
-                        ->wherePivot('paymentmethod_id', $method->id)
-                        ->updateExistingPivot($method->id, ['amount' => $method->amount - $paid]);
-                    // add bank amount
-                    $user->payment_methods()
-                        ->wherePivot('paymentmethod_id', $toMethod->id)
-                        ->updateExistingPivot($toMethod->id, ['amount' => $toMethod->amount + $paid]);
-                }
-            }else{
-                $user->payment_methods()
-                    ->wherePivot('paymentmethod_id', $method->id)
-                    ->updateExistingPivot($method->id, ['amount' => $method->amount + $extra - $paid]);
-            }
         }
+
+        $paid = $request->paid;
+        $extra = $request->extra;
+        $description = 'Add daily usage record';
 
         if(isset($request->description))
             $description = $request->description;
@@ -126,6 +72,8 @@ class DailyUsageController extends Controller
         }
 
         $daily_usage->save();
+        app(\App\Http\Controllers\User\API\PaymentMethodController::class)
+            ->handleUpdateUserBalance($user,$method,$method->amount + $request->extra - $request->paid, $request->ip(),$description);
         return \response()->json([
             'daily_usage' => $daily_usage
         ]);
@@ -205,13 +153,13 @@ class DailyUsageController extends Controller
                 $new_method_amount = $new_method->amount - $new_paid + $new_extra;
                 $old_method_amount = $old_method->amount - $old_extra + $old_paid;
 
-                $user->payment_methods()
-                    ->wherePivot('paymentmethod_id', $old_method->id)
-                    ->updateExistingPivot($old_method->id, ['amount' => $old_method_amount]);
+                $reason = 'Change payment method to ' . $new_method->name;
+                app(\App\Http\Controllers\User\API\PaymentMethodController::class)
+                    ->handleUpdateUserBalance($user,$old_method,$old_method_amount, $request->ip(),$reason);
 
-                $user->payment_methods()
-                    ->wherePivot('paymentmethod_id', $new_method->id)
-                    ->updateExistingPivot($new_method->id, ['amount' => $new_method_amount]);
+                $reason = 'Change payment method from ' . $old_method->name;
+                app(\App\Http\Controllers\User\API\PaymentMethodController::class)
+                    ->handleUpdateUserBalance($user,$new_method,$new_method_amount, $request->ip(),$reason);
 
             }else{
                 $method = $user->payment_methods()->where('id', $daily_usage->paymentmethod_id)->first();
@@ -224,9 +172,10 @@ class DailyUsageController extends Controller
                 $daily_usage->paid = $new_paid;
                 $daily_usage->extra = $new_extra;
                 $new_amount = $method->amount - $old_extra + $old_paid - $new_paid + $new_extra;
-                $user->payment_methods()
-                    ->wherePivot('paymentmethod_id', $method->id)
-                    ->updateExistingPivot($method->id, ['amount' => $new_amount]);
+
+                $reason = 'Updated daily usage record ' . $daily_usage->id;
+                app(\App\Http\Controllers\User\API\PaymentMethodController::class)
+                    ->handleUpdateUserBalance($user,$method,$new_amount, $request->ip(),$reason);
             }
 
             $daily_usage->update();
@@ -260,42 +209,9 @@ class DailyUsageController extends Controller
                     ['message' => 'Method not found'],404
                 );
             }
-            $usage_type = UsageType::where('id',$daily_usage->usagetype_id)->first();
-            if (!$usage_type){
-                return \response()->json(
-                    ['message' => 'Usage type not found'],404
-                );
-            }else{
-                if($usage_type->slug === 'bank_to_wallet' || $usage_type->slug === 'wallet_to_bank'){
-                    if($usage_type->slug === 'bank_to_wallet'){
-                        $toMethod = $user->payment_methods()->where('slug','wallet')->first();
-                        // add bank amount
-                        $user->payment_methods()
-                            ->wherePivot('paymentmethod_id', $method->id)
-                            ->updateExistingPivot($method->id, ['amount' => $method->amount + $daily_usage->paid]);
-
-                        // subtract wallet amount
-                        $user->payment_methods()
-                            ->wherePivot('paymentmethod_id', $toMethod->id)
-                            ->updateExistingPivot($toMethod->id, ['amount' => $toMethod->amount - $daily_usage->paid]);
-                    }
-                    if($usage_type->slug === 'wallet_to_bank'){
-                        $toMethod = $user->payment_methods()->where('slug','bank')->first();
-                        // add wallet amount
-                        $user->payment_methods()
-                            ->wherePivot('paymentmethod_id', $method->id)
-                            ->updateExistingPivot($method->id, ['amount' => $method->amount + $daily_usage->paid]);
-                        // subtract bank amount
-                        $user->payment_methods()
-                            ->wherePivot('paymentmethod_id', $toMethod->id)
-                            ->updateExistingPivot($toMethod->id, ['amount' => $toMethod->amount - $daily_usage->paid]);
-                    }
-                }else{
-                    $user->payment_methods()
-                        ->wherePivot('paymentmethod_id', $method->id)
-                        ->updateExistingPivot($method->id, ['amount' => $method->amount - $daily_usage->extra + $daily_usage->paid]);
-                }
-            }
+            $reason = 'Daily usage record ' . $daily_usage->id . ' has been deleted';
+            app(\App\Http\Controllers\User\API\PaymentMethodController::class)
+                ->handleUpdateUserBalance($user,$method,$method->amount - $daily_usage->extra + $daily_usage->paid, $request->ip(),$reason);
             $daily_usage->delete();
             return \response()->json([
                 'message' => 'Remove daily usage successfully.'

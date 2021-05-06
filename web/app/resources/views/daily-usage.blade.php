@@ -29,12 +29,7 @@
                             <td>{{ $daily_usage->created_at }}</td>
                             <td>{{ $daily_usage->updated_at }}</td>
                         </tr>
-                        <?php
-                            if($daily_usage->usage_type->slug !== 'bank_to_wallet' ||
-                                $daily_usage->usage_type->slug !== 'wallet_to_bank'){
-                                $totalOfMonth += $daily_usage->paid;
-                            }
-                        ?>
+                        <?php $totalOfMonth += $daily_usage->paid; ?>
                     @endforeach
                 @endif
                 </tbody>

@@ -73,5 +73,6 @@
       `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer update`
 2. Install new package from composer (Please make sure that you add package config into app.php file manually):<br/>
    `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer require <your package name>`
+   * Add class path of the package to config/app.php
 
 #### Change logs:
