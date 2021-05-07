@@ -19,8 +19,12 @@
     `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer install`
 
 6. #### Change owner for storage and bootstrap/cache/ folder in your local folder:
-    `sudo chown www-data:www-data -R web/app/storage/`<br/>
-    `sudo chown www-data:www-data -R web/app/bootstrap/cache/`
+    `sudo chown www-data:thang -R web/app/storage/`<br/>
+    `sudo chown www-data:thang -R web/app/bootstrap/cache/`<br/>
+
+   * This will let you do some changes in storage or bootstrap cache folder when pull new code from remote branch: <br/>
+     `find ./web/app/storage/ -type d -exec chmod 775 {} \;  # Change directory permissions rwxr-xr-x`<br/>
+     `find ./web/app/bootstrap/cache/ -type f -exec chmod 644 {} \;  # Change file permissions rw-r--r--`<br/>
 
 7. #### Run project:
     `docker-compose up -d`
@@ -44,8 +48,12 @@
    `docker run --rm --name tmm_composer -v $(pwd)/web/app:/srv/app/web tmm_composer:latest composer update`
 
 5. #### Change owner for storage and bootstrap/cache/ folder in your local folder:
-   `sudo chown www-data:www-data -R web/app/storage/`<br/>
-   `sudo chown www-data:www-data -R web/app/bootstrap/cache/`
+   `sudo chown www-data:thang -R web/app/storage/`<br/>
+   `sudo chown www-data:thang -R web/app/bootstrap/cache/`<br/>
+
+   * This will let you do some changes in storage or bootstrap cache folder when pull new code from remote branch: <br/>
+     `find ./web/app/storage/ -type d -exec chmod 775 {} \;  # Change directory permissions rwxr-xr-x`<br/>
+     `find ./web/app/bootstrap/cache/ -type f -exec chmod 644 {} \;  # Change file permissions rw-r--r--`<br/>
 
 6. #### Run project:
    `docker-compose up -d`

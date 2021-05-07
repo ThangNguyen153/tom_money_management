@@ -27,4 +27,5 @@ Route::group([
     ], function(){
         Route::get('/daily-usage', 'App\Http\Controllers\Auth\Web\AccessController@getDailyUsage')->name('user-daily-usage');
         Route::get('/statistics', 'App\Http\Controllers\Auth\Web\AccessController@getUsageStatistics')->name('user-usage-statistics');
+        Route::get('/activities', 'App\Http\Controllers\Auth\Web\AccessController@getActivityLog')->name('user-activity-log');
 });
