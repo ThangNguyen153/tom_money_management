@@ -164,6 +164,7 @@ return [
         Laravel\Passport\PassportServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         Spatie\Activitylog\ActivitylogServiceProvider::class,
+        L5Swagger\L5SwaggerServiceProvider::class,
         /*
          * Package Service Providers...
          */

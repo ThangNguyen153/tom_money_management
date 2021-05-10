@@ -71,6 +71,40 @@ class AccessController extends Controller
     }
 
     /**
+     * @OA\Post(
+     * path="/api/access/login",
+     *   tags={"Access"},
+     *   summary="Login",
+     *   operationId="login",
+     *   description="return access token",
+     *
+     *   @OA\RequestBody(
+     *    required=true,
+     *    description="user credentials",
+     *    @OA\JsonContent(
+     *       required={"email","password"},
+     *       @OA\Property(property="email", type="string", format="email", example="user1@mail.com"),
+     *       @OA\Property(property="password", type="string", format="password", example="PassWord12345"),
+     *       @OA\Property(property="remember_me", type="boolean", example="true"),
+     *    ),
+     *   ),
+     *   @OA\Response(
+     *      response=200,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *    response=401,
+     *    description="Unauthorized",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="message", type="string", example="Unauthorized")
+     *    )
+     *   )
+     *)
+     **/
+    /**
      * Login user and create token
      *
      * @param  [string] email
@@ -106,7 +140,22 @@ class AccessController extends Controller
             )->toDateTimeString()
         ]);
     }
-
+    /**
+     * @OA\Get(
+     * path="/api/access/logout",
+     *   tags={"Access"},
+     *   summary="Logout",
+     *   operationId="logout",
+     *
+     *  security={
+     *      {"bearer_token": {}},
+     *  },
+     *  @OA\Response(
+     *     response=401,
+     *      description="Unauthenticated"
+     *  )
+     *)
+     **/
     /**
      * Logout user (Revoke the token)
      *
