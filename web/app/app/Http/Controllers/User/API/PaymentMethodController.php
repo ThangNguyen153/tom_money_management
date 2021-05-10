@@ -6,9 +6,20 @@ namespace App\Http\Controllers\User\API;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentMethod;
 use App\Models\TMM_User;
+use App\Repositories\PaymentMethod\PaymentMethodRepositoryInterface;
 use Illuminate\Http\Request;
 class PaymentMethodController extends Controller
 {
+    /**
+     * @var PaymentMethodRepositoryInterface
+     */
+    protected $paymentMethodRepo;
+
+    public function __construct(PaymentMethodRepositoryInterface $paymentMethodRepo)
+    {
+        $this->paymentMethodRepo = $paymentMethodRepo;
+    }
+
     /**
      * Update user's payment methods
      * @param [array] methods
@@ -58,7 +69,7 @@ class PaymentMethodController extends Controller
                 // If 1 method of current methods is not in input array, then remove it from database
                 if ($unused) {
                     // find method object by its slug
-                    $methodObj = PaymentMethod::where('slug', $currentMethod->slug)->first();
+                    $methodObj = $this->paymentMethodRepo->findBy('slug', $currentMethod->slug);
                     $user->payment_methods()->detach($methodObj);
                 }
             }else{
@@ -70,7 +81,7 @@ class PaymentMethodController extends Controller
         if(!empty($inputMethods)) {
             foreach ($inputMethods as $inputMethod) {
                 // check new input method is existed in payment_methods table before adding to user
-                $payment_method = PaymentMethod::where('slug', $inputMethod['name'])->first();
+                $payment_method = $this->paymentMethodRepo->findBy('slug', $inputMethod['name']);
                 if ($payment_method) {
                     $user->payment_methods()->attach($payment_method);
                 }
@@ -89,7 +100,7 @@ class PaymentMethodController extends Controller
                         }
                     }
                     if($unused){
-                        $methodObj = PaymentMethod::where('slug', $currentMethod->slug)->first();
+                        $methodObj = $this->paymentMethodRepo->findBy('slug', $currentMethod->slug);
                         $user->payment_methods()->detach($methodObj);
                     }
                 }

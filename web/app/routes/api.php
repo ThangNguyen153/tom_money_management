@@ -70,6 +70,7 @@ Route::group([
             'middleware' => ['cors', 'json.response', 'auth:api']
         ], function() {
             Route::delete('user', 'App\Http\Controllers\Admin\API\UserController@deleteUser')->name('delete-user');
+            Route::get('user', 'App\Http\Controllers\Admin\API\UserController@findUserBy')->name('get-user');
             Route::get('my-profile', 'App\Http\Controllers\Admin\API\UserController@getMyProfile')->name('get-admin-profile');
             Route::get('usage-types', 'App\Http\Controllers\Admin\API\UsageTypeController@getUsageTypes')->name('get-usage-types');
         });

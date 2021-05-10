@@ -7,10 +7,22 @@ use App\Http\Controllers\Controller;
 use App\Models\DailyUsage;
 use App\Models\PaymentMethod;
 use App\Models\UsageType;
+use App\Repositories\BaseRepository;
+use App\Repositories\DailyUsage\DailyUsageRepositoryInterface;
+use App\Repositories\UsageType\UsageTypeRepository;
 use Illuminate\Http\Request;
 use DateTime;
 class DailyUsageController extends Controller
 {
+    /**
+     * @var DailyUsageRepositoryInterface
+     */
+    protected $dailyUsageRepo;
+
+    public function __construct(DailyUsageRepositoryInterface $dailyUsageRepo)
+    {
+        $this->dailyUsageRepo = $dailyUsageRepo;
+    }
     /**
      * Create user's daily usage
      * @param [string] payment_method
@@ -42,7 +54,7 @@ class DailyUsageController extends Controller
             );
         }
 
-        $usage_type = UsageType::where('slug',$request->usage_type)->first();
+        $usage_type = $this->dailyUsageRepo->findUsage(new UsageTypeRepository(),'slug',$request->usage_type);
         if (!$usage_type){
             return \response()->json(
                 ['message' => 'Usage type not found'],404
@@ -102,14 +114,14 @@ class DailyUsageController extends Controller
             'date' => 'date_format:Y-m-d H:i:s',
         ]);
         $user = $request->user();
-        $daily_usage = DailyUsage::find($request->record_id);
+        $daily_usage = $this->dailyUsageRepo->find($request->record_id);
         if(!$daily_usage){
             return \response()->json(
                 ['message' => 'Record not found'],404
             );
         }else{
             if(isset($request->usage_type)){
-                $usage_type = UsageType::where('slug',$request->usage_type)->first();
+                $usage_type = $this->dailyUsageRepo->findUsage(new UsageTypeRepository(),'slug',$request->usage_type);
                 if (!$usage_type){
                     return \response()->json(
                         ['message' => 'Usage type not found'],404
@@ -197,7 +209,7 @@ class DailyUsageController extends Controller
         ]);
 
         $user = $request->user();
-        $daily_usage = DailyUsage::find($request->record_id);
+        $daily_usage = $this->dailyUsageRepo->find($request->record_id);
         if(!$daily_usage){
             return \response()->json(
                 ['message' => 'Record not found'],404

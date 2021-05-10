@@ -2,11 +2,21 @@
 namespace App\Http\Controllers\Admin\API;
 
 use App\Models\TMM_User;
+use App\Repositories\TMM_User\TMM_UserRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class UserController extends Controller
 {
+    /**
+     * @var TMM_UserRepositoryInterface
+     */
+    protected $userRepo;
+
+    public function __construct(TMM_UserRepositoryInterface $userRepo)
+    {
+        $this->userRepo = $userRepo;
+    }
 
     /**
      * Get the authenticated User
@@ -29,7 +39,7 @@ class UserController extends Controller
             'email' => 'required|string|email'
         ]);
         $email =$request->input('email');
-        $user = TMM_User::where('email',$email)->first();
+        $user = $this->userRepo->findBy('email',$email);
         if($user){
             // delete all user's payment methods
             $user->payment_methods()->detach();
@@ -42,5 +52,27 @@ class UserController extends Controller
                 'message' => 'User not found'
             ],404);
         }
+    }
+
+    /**
+     * Get the authenticated User
+     * @param [string] attr
+     * @param [string] value
+     * @return [json] user object
+     */
+    public function findUserBy(Request $request)
+    {
+        $request->validate([
+            'attr' => 'string|min:3|max:50',
+            'value' => 'string|min:3|max:50',
+        ]);
+        $attr = 'id';
+        $value = '';
+        if(isset($request->attr))
+            $attr = $request->attr;
+        if(isset($request->value))
+            $value = $request->value;
+
+        return $this->userRepo->findBy($attr,$value);
     }
 }
