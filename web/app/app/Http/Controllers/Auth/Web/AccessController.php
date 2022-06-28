@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\Web\Requests\LoginRequest;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Support\Facades\DB;
 class AccessController extends Controller
 {
     public function showLoginForm(){
@@ -62,9 +63,14 @@ class AccessController extends Controller
                                 ->orderBy('created_at', 'DESC')
                                 ->paginate(30)
                                 ->withPath('/user/daily-usage');
+            $totalUsageOfMonth = $user->daily_usages()
+                                    ->whereYear('created_at', '=', now()->year)
+                                    ->whereMonth('created_at', '=', now()->month)
+                                    ->sum('paid');
             return view('daily-usage', ['daily_usages' => $daily_usages,
                 'userPaymentMethods' => $userPaymentMethods,
                 'usagetypes' => $usagetypes,
+                'totalUsageOfMonth' => $totalUsageOfMonth
             ]);
         }else{
             return redirect()->route('login-form');
@@ -77,7 +83,23 @@ class AccessController extends Controller
             if($user->roles->first()->name !== 'user'){
                 return response()->json(['message' => 'You don\'t have permission. User Only'],403);
             }
-            return view('statistics');
+            DB::enableQueryLog();
+            $data = DB::table('daily_usages')
+                    ->select('usage_types.name',DB::raw('SUM(paid) as total_usage'))
+                    ->join('usage_types','daily_usages.usagetype_id','=','usage_types.id')
+                    ->whereMonth('daily_usages.created_at', '=', now()->month)
+                    ->whereYear('daily_usages.created_at', '=', now()->year)
+                    ->groupBy('daily_usages.usagetype_id','usage_types.name')
+                    ->having('total_usage', '>' , 0)
+                    ->orderBy('total_usage', 'DESC')
+                    ->get();
+            $labels = array();
+            $usages = array();
+            foreach ($data as $value){
+                array_push($labels,$value->name);
+                array_push($usages,$value->total_usage);
+            }
+            return view('statistics')->with('labels',json_encode($labels))->with('usages',json_encode($usages,JSON_NUMERIC_CHECK));
         }else{
             return redirect()->route('login-form');
         }

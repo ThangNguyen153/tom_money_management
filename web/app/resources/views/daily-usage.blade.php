@@ -1,4 +1,15 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        window.jQuery || document.write("{{ asset('js/jquery-3.1.1.min.js') }}");
+    </script>
+</head>
+<body>
 <button><a href="{{ route('logout') }}">Log out</a></button>
+<button><a href="{{ route('user-daily-usage') }}">Daily Usage</a></button>
+<button><a href="{{ route('user-usage-statistics') }}">Statistic</a></button>
+<button><a href="{{ route('user-activity-log') }}">Activity Log</a></button>
 <div class="row">
     <div style="display: flex;">
         <div style="float: left;width: 40%; padding: 10px; height: 300px">
@@ -16,7 +27,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                <?php $totalOfMonth = 0; ?>
                 @if(isset($daily_usages) && !empty(array($daily_usages)))
                     @foreach($daily_usages as $daily_usage)
                         <tr>
@@ -29,7 +39,6 @@
                             <td>{{ $daily_usage->created_at }}</td>
                             <td>{{ $daily_usage->updated_at }}</td>
                         </tr>
-                        <?php $totalOfMonth += $daily_usage->paid; ?>
                     @endforeach
                 @endif
                 </tbody>
@@ -43,7 +52,7 @@
                     <p>{{ $userPaymentMethod->name }} : {{ number_format($userPaymentMethod->amount,3) }}</p>
                 @endforeach
             @endif
-            <h3>Total Usage Of Month: {{number_format($totalOfMonth,3)}}</h3>
+            <h3>Total Usage Of Month: {{number_format($totalUsageOfMonth,3)}}</h3>
         </div>
         <div style="float: left;width: 40%; padding: 10px; height: 300px; max-height: 300px;">
             <h3>Usage Type List</h3>
@@ -57,3 +66,5 @@
         </div>
     </div>
 </div>
+</body>
+</html>

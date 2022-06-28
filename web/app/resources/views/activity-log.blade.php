@@ -1,3 +1,7 @@
+<button><a href="{{ route('logout') }}">Log out</a></button>
+<button><a href="{{ route('user-daily-usage') }}">Daily Usage</a></button>
+<button><a href="{{ route('user-usage-statistics') }}">Statistic</a></button>
+<button><a href="{{ route('user-activity-log') }}">Activity Log</a></button>
 <table border="3">
     <thead>
     <tr>
